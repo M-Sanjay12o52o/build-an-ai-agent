@@ -19,25 +19,7 @@ def write_file(working_directory, file_path, content):
     try:
       with open(abs_path, 'w') as f:
         f.write(content)
-        return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
     except Exception as e:
       return f'Error: {str(e)}'
-    
-  return True
-
-# result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
-# print(result)
-# print("\n")
-
-# result_two = write_file("calculator", "ipsum.txt", "wait, this isn't lorem ipsum")
-# print(result_two)
-# print("\n")
-
-# result_three = write_file("calculator", "scientific", "wait, this isn't lorem ipsum")
-# print(result_three)
-
-
-result_two = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-print(result_two)
-
-
+  
+  return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'

@@ -6,9 +6,6 @@ def get_file_content(working_directory, file_path):
     # return a string with an error:
     abs_file_path = os.path.join(working_directory, file_path)
 
-    print("working_directory: ", working_directory)
-    print("abs_file_path: ", abs_file_path)
-
     # if not os.path.commonpath([working_directory, abs_file_path]) == working_directory:
     if not os.path.commonpath([working_directory, abs_file_path]) == working_directory:
       return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'

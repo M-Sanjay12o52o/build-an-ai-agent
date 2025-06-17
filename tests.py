@@ -1,24 +1,35 @@
 # from functions.get_files_info import get_files_info
 import os
 from functions.get_file_content import get_file_content
+from functions.write_file import write_file
 
 working_directory = os.path.realpath("calculator")
 
+# write_file tests
+
+result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
+print(result)
+
+result_one = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
+print(result_one)
+
+result_two = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+print(result_two)
 
 # update your tests.py file. Remove all the calls to `get_files_info`, and instead
 # test `get_file_content("calculator", "lorem.txt")`. Ensure that it 
 # truncates properly.
-result =  get_file_content(working_directory, "lorem.txt")
-print(result)
+# result =  get_file_content(working_directory, "lorem.txt")
+# print(result)
 
-result1 = get_file_content(working_directory, "main.py")
-print(result1)
+# result1 = get_file_content(working_directory, "main.py")
+# print(result1)
 
-result2 = get_file_content(working_directory, "pkg/calculator.py")
-print(result2)
+# result2 = get_file_content(working_directory, "pkg/calculator.py")
+# print(result2)
 
-result3 = get_file_content(working_directory, "bin/cat")
-print(result3)
+# result3 = get_file_content(working_directory, "bin/cat")
+# print(result3)
 
 # # Create a new tests.py file in the root of your project.
 #   # When executed directly, it should:
