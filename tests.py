@@ -2,19 +2,46 @@
 import os
 from functions.get_file_content import get_file_content
 from functions.write_file import write_file
+from functions.run_python_file import run_python_file
 
 working_directory = os.path.realpath("calculator")
 
+
+# run_python_file tests
+
+result = run_python_file("calculator", "main.py")
+print(result)
+print("\n")
+
+result_one = run_python_file("calculator", "tests.py")
+print(result_one)
+print("\n")
+
+
+# (this should return an error)
+result_two = run_python_file("calculator", "../main.py") 
+print(result_two)
+print("\n")
+
+
+# (this should return an error)
+result_three = run_python_file("calculator", "nonexistent.py") 
+print(result_three)
+print("\n")
+
+
+
+
 # write_file tests
 
-result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
-print(result)
+# result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
+# print(result)
 
-result_one = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
-print(result_one)
+# result_one = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
+# print(result_one)
 
-result_two = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-print(result_two)
+# result_two = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+# print(result_two)
 
 # update your tests.py file. Remove all the calls to `get_files_info`, and instead
 # test `get_file_content("calculator", "lorem.txt")`. Ensure that it 

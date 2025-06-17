@@ -7,7 +7,7 @@ def run_python_file(working_directory, file_path):
 
   # if the file_path is outside of the `working_directory`, return a string with an error:
   if not os.path.commonpath([working_directory, abs_path]) == working_directory:
-      return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
+      return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
 
   exists = os.path.exists(abs_path)
 
@@ -69,6 +69,7 @@ print("\n")
 result_five = run_python_file("calculator", "lorem.txt") 
 print(result_five)
 print("\n")
+
 
 
 
