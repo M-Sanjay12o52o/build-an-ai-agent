@@ -24,7 +24,13 @@ def run_python_file(working_directory, file_path):
 
   # Use `subprocess.run` function to execute the Python file
     # set a timeout of 30 seconds to prevent infinite execution
+    # Try to execute the Python file safely
   try:
+      # Run the Python file using subprocess with:
+      # - capture_output=True: to collect both stdout and stderr
+      # - text=True: to get output as strings (not bytes)
+      # - timeout=30: to prevent the process from hanging forever
+      # - cwd=working_directory: to ensure the script runs in the correct directory
       result = subprocess.run(
          ["python3", abs_path],
          capture_output=True,
@@ -34,18 +40,31 @@ def run_python_file(working_directory, file_path):
       ) 
 
       output = ""
+
+      # If there's output to stdout, include it
       if result.stdout:
          output += f"STDOUT:\n{result.stdout}"
+
+      # If there's output to stderr, include it
       if result.stderr:
          output += f"STDERR:\n{result.stderr}"
+
+      # If the script exited with an error (non-zero exit code), report it
       if result.returncode:
          output += f"\nProcess exited with code {result.returncode}"
+
+      # If no output was produced at all, return a fallback message
       if not output.strip():
          return "No output produced"
+
+      # Otherwise, return the full formatted output
       return output.strip()
 
+  # Catch any unexpected exceptions (e.g., permission issues, file not executable)
   except Exception as e:
-     return f'Error: executing Python file: {e}'
+      return f'Error: executing Python file: {e}'
+
+
 
 result = run_python_file("calculator", "main.py")
 print(result)
