@@ -1,0 +1,9 @@
+# functions/tool_schemas.py
+from google.genai import types
+from functions.schemas.schema_get_files_info import schema_get_files_info
+
+available_function = types.Tool(
+  function_declarations=[
+    schema_get_files_info
+  ]
+)
