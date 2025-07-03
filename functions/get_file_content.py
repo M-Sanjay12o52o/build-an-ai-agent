@@ -4,7 +4,10 @@ def get_file_content(working_directory, file_path):
   try:
     # if the file_path is outside the `working_directory`
     # return a string with an error:
-    abs_file_path = os.path.join(working_directory, file_path)
+    # abs_file_path = os.path.join(working_directory, file_path)
+
+    working_directory = os.path.abspath(working_directory)
+    abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
 
     # if not os.path.commonpath([working_directory, abs_file_path]) == working_directory:
     if not os.path.commonpath([working_directory, abs_file_path]) == working_directory:

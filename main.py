@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 from system_prompt import system_prompt
 from functions.tool_schemas import available_function
+from functions.call_function import call_function
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -49,8 +50,14 @@ if (verbose):
   print("User prompt:", {user_prompt})
   print("Prompt tokens:", {prompt_tokens})
   print("Response tokens:", {response_tokens})
-elif function_call_part:
-  print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+
+if function_call_part:
+  function_call_result = call_function(function_call_part, verbose=verbose) 
+  if function_call_result.parts[0].function_response.response:
+    if verbose:
+      print(f"-> {function_call_result.parts[0].function_response.response}")
+  else:
+    raise ValueError("Function response is empty or None.")
 else:
   print("Response:", response.text) 
 
