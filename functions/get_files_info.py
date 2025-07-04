@@ -1,19 +1,9 @@
 import os
-
-# helpful standard library functions:
-# os.path.abspath(): Get an absolute path from a relative path - NOT USED
-# os.path.join(): Join two paths together safely (handles slashes) - USED ONCE
-# .startswith(): Check if a string starts with a substring - NOT USED
-# os.path.isdir(): Check if a path is a directory - USED TWICE
-# os.listdir(): List the contents of a directory - USED ONCE
-# os.path.getsize(): Get the size of a file - USED ONCE
-# os.path.isfile(): Check if a path is a file - NOT USED
-# .join(): Join a list of strings together with a separator - DON'T KNOW
+from google.genai import types
+from config import MAX_CHARS 
 
 def get_files_info(working_directory, directory=None):
   try:
-    # if the `directory` argument is outside the `working_directory`
-    # return a string with an error:
     if directory is None:
       directory = working_directory
 
@@ -57,3 +47,18 @@ def get_files_info(working_directory, directory=None):
 
   except Exception as e:
     return f'Error: {str(e)}'
+
+
+schema_get_files_info = types.FunctionDeclaration(
+  name="get_files_info",
+  description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+  parameters=types.Schema(
+    type=types.Type.OBJECT,
+    properties={
+      "directory": types.Schema(
+        type=types.Type.STRING,
+        description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+      )
+    }
+  )
+)

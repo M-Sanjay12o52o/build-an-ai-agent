@@ -1,82 +1,111 @@
 import os
 import sys
-from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
+
+from prompts import robot_system_prompt 
 from system_prompt import system_prompt
 from functions.tool_schemas import available_function
 from functions.call_function import call_function
+from config import MAX_CHARS
 
-load_dotenv()
-api_key = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key)
 
-model = "gemini-2.0-flash-001"
-contents = "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum."
+def main():
+  load_dotenv()
+  
+  verbose = "--verbose" in sys.argv
+  args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
 
-if len(sys.argv) < 2: 
-  print("Error: Prompt not provided")
-  sys.exit(1)
+  if not args:
+    print("AI Code Assistant")
+    print('\nUsage: python main.py "your prompt here" [--verbose]')
+    print('Example: python main.py "How do I build a calculator app?"')
+    sys.exit(1)
 
-user_prompt = sys.argv[1]
+  api_key = os.environ.get("GEMINI_API_KEY")
+  client = genai.Client(api_key=api_key)
 
-verbose = "--verbose" in sys.argv
+  user_prompt = " ".join(args)
 
-messages = [
-  types.Content(role="user", parts=[types.Part(text=user_prompt)]),
-]
+  if verbose:
+    print(f"User prompt: {user_prompt}\n")
 
-# - [ ] Back in your `generate_content` function, instead of simply printing the name of the function the LLM decides to call, use `call_function`.
-"""
-- The `types.Content` that we return from `call_function` should have a `.parts[0].function_response.response` within.
-- If it doesn't, `raise` a fatal exception of some sort.
-- If it does, and `verbose` was set, print the result of the function call like this:
-```
-print(f"-> {function_call_result.parts[0].function_response.resopnse}")
-```
-"""
+  messages = [
+    types.Content(role="user", parts=[types.Part(text=user_prompt)]),
+  ]
 
-# - [ ] Test your program. You should now be able to execute each function given a prompt that asks for it. Try some different prompets and use the `--verbose` flag to make sure all the function work.
-"""
-- List the directory contents.
-- Get a file's contents
-- Write file contents (don't overwrite anything important, maybe create a new file)
-- Execute the calculator app's tests (`tests.py`)
-"""
+  generate_content(client, messages, verbose)
 
-response = client.models.generate_content(
-  model=model, 
-  contents=messages, 
-  config=types.GenerateContentConfig(
-    tools=[available_function],
-    system_instruction=system_prompt
-))
 
-prompt_tokens = response.usage_metadata.prompt_token_count
-response_tokens = response.usage_metadata.candidates_token_count
 
-candidate = response.candidates[0]
+def generate_content(client, messages, verbose):
+  response = client.models.generate_content(
+      model="gemini-2.0-flash-001", 
+      contents=messages, 
+      config=types.GenerateContentConfig(
+        tools=[available_function], system_instruction=system_prompt
+      )
+    )
 
-function_call_part = None
+  if verbose:
+    print("Prompt tokens:", response.usage_metadata.prompt_token_count)
+    print("Response tokens:", response.usage_metadata.candidates_token_count)
 
-for part in candidate.content.parts:
-  if hasattr(part, "function_call") and part.function_call is not None:
-    function_call_part = part.function_call
-    break
+  if not response.function_calls:
+    return response.text  
 
-if (verbose):
-  print("User prompt:", {user_prompt})
-  print("Prompt tokens:", {prompt_tokens})
-  print("Response tokens:", {response_tokens})
+  function_responses = []
 
-if function_call_part:
-  function_call_result = call_function(function_call_part, verbose=verbose) 
-  if function_call_result.parts[0].function_response.response:
+  # Assignment
+  # - [x] Create a loop that iterates at most 20 times (this will stop our agent from spinning its wheels forever).
+  for i in range(20):
+    # - [x] In each iteration, check the .candidates property of the response. It's a list of response variations, and in particular it contains the equivalent of "I want to call get_files_info...", so we need to add it to our conversation. Iterate over each candidate and add its .content to your messages list.
+    for candidate in response.candidates:
+      messages.append(candidate.content)
+
+    # - [x] After each actual function call, append the returned types.Content to the messages as well. This is the equivalent of "Here's the result of get_files_info...".
+    # - [x] After each iteration, if a function was called, you should iterate again (unless max iterations was reached). Otherwise, you should print the LLM's final response (the .text property of the response) and break out - this means the agent is done with the task! (or failed miserably, which happens as well)
+        
+    if not response.function_calls:
+      print(response.text)
+      break
+
+    for function_call_part in response.function_calls:
+      function_call_result = call_function(function_call_part, verbose)
+      messages.append(function_call_result.parts[0]) 
+
+
+    # - [x] This might already be happening, but make sure that with each call to client.models.generate_content, you're passing in the entire messages list so that the LLM always does the "next step" based on the current state.
+    response = client.models.generate_content(
+          model="gemini-2.0-flash-001", 
+          contents=messages, 
+          config=types.GenerateContentConfig(
+            tools=[available_function], system_instruction=system_prompt
+          )
+        )
+
+
+    if (
+      not function_call_result.parts
+      or not function_call_result.parts[0].function_response
+    ):
+      raise Exception("empty function call result")
     if verbose:
       print(f"-> {function_call_result.parts[0].function_response.response}")
-  else:
-    raise ValueError("Function response is empty or None.")
-else:
-  print("Response:", response.text) 
+    function_responses.append(function_call_result.parts[0])
+
+  if not function_responses:
+    raise Exception("no function responses generated, exiting.")
+
+if __name__ == "__main__":
+  main()
+
+
+
+
+
+
+
 
 
