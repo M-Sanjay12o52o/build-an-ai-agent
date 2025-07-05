@@ -91,10 +91,42 @@ TypeError: run_python_file() got an unexpected keyword argument 'arguments'
     run_python_file() got an unexpected keyword argument 'arguments'
 
 
+4. The agent is currently modifing the calculator/main.py code to return the result of print(3 + 7 * 2) 
+    It seems like it cannot access the file calculator/pkg/calculator.py - that must be reason it's not able to fix the error.
+
+
+5. The agent is not able access the calculator/pkg/calculator.py file ? That's what needs fixing.
+    ~/De/w/code/courses/boot-dot-dev/build-an-ai-agent  on   main !4  uv run main.py "give me the contents of the file calculator/pkg/calculator.py"
+ - Calling function: get_file_content
+Traceback (most recent call last):
+  File "/Users/msanjayachar/Desktop/workspace/code/courses/boot-dot-dev/build-an-ai-agent/main.py", line 102, in <module>
+    main()
+    ~~~~^^
+  File "/Users/msanjayachar/Desktop/workspace/code/courses/boot-dot-dev/build-an-ai-agent/main.py", line 38, in main
+    generate_content(client, messages, verbose)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/msanjayachar/Desktop/workspace/code/courses/boot-dot-dev/build-an-ai-agent/main.py", line 75, in generate_content
+    function_call_result = call_function(function_call_part, verbose)
+  File "/Users/msanjayachar/Desktop/workspace/code/courses/boot-dot-dev/build-an-ai-agent/functions/call_function.py", line 35, in call_function
+    function_result = function_map[function_name](**args)
+TypeError: get_file_content() got an unexpected keyword argument 'directory'
+
+    ~/De/w/c/cou/b/build-an-ai-agent  on   main !4             
 """
 
+"""
 
+1. The agent is not able access the calculator/pkg/calculator.py file ? That's what needs fixing.
+    ~/De/w/code/courses/boot-dot-dev/build-an-ai-agent  on   main !4  uv run main.py "give me the contents of the file calculator/pkg/calculator.py"
+  1. The agent is able to access the calculator directory and is also creating a file and updating files in here. 
+      But it's not able access files inside calculator/pkg. hence it's not reaching files here hence not able to get context of the bug and fix it.
 
+  2. I am able to get the contents of a file usign `get_file_content_result = get_file_content("./", "./calculator/pkg/calculator.py")' in the main.py file
+      then the agent must be calling it wrong to not get the content of the file.
+
+3. I don't know what worked but we were able to get the contents of the file calculator/pkg/calculator.py from the agent.      
+
+"""
 
 
 

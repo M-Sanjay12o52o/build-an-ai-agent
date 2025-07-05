@@ -8,6 +8,7 @@ from prompts import robot_system_prompt
 from system_prompt import system_prompt
 from functions.tool_schemas import available_function
 from functions.call_function import call_function
+from functions.get_file_content import get_file_content
 from config import MAX_CHARS
 
 
@@ -34,6 +35,13 @@ def main():
   messages = [
     types.Content(role="user", parts=[types.Part(text=user_prompt)]),
   ]
+
+  get_file_content_result = get_file_content("./", "./calculator/pkg/calculator.py")
+
+  print("\n---Start---\n")
+  print("get_files_content_result")
+  print(get_file_content_result)
+  print("\n---End---\n")
 
   generate_content(client, messages, verbose)
 
@@ -72,6 +80,10 @@ def generate_content(client, messages, verbose):
       break
 
     for function_call_part in response.function_calls:
+      print("\n---Start---\n")
+      print("function call from main")
+      print("function_call_part: ", function_call_part)
+      print("\n---End---\n")
       function_call_result = call_function(function_call_part, verbose)
       messages.append(function_call_result.parts[0]) 
 
